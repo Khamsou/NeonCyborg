@@ -13,6 +13,7 @@ public class Player : MonoBehaviour {
 	public GameObject PlayerWeaponLight;
 	public GameObject OrientationRoot;
 	public GameObject Weapon;
+	public GameObject Guard;
 
 	[Header("Main Config")]
 	public string PlayerIdentifier = "Player1";
@@ -106,20 +107,23 @@ public class Player : MonoBehaviour {
 		_guarding = false;
 
 
-		if(!_guarding && !_attacking && _timerAttack > (AttackTime + AttackCoolDown)){
+		if (!_guarding && !_attacking && _timerAttack > (AttackTime + AttackCoolDown)) {
 			if (Input.GetButtonDown (PlayerIdentifier + "Attack")) {
 				_attacking = true;
 				_timerAttack = 0;
 				_nexAnimWeapon = "HallebardeAttack";
 			}
-			if (Input.GetButton (PlayerIdentifier + "Guard")) {
-				_guarding = true;
-			}
+		}
+		if (!_attacking && Input.GetButton (PlayerIdentifier + "Guard")) {
+			_guarding = true;
 		}
 
 		if (_guarding == true) {
 			lightOn = true;
-			_xVel = _yVel = 0;
+			if (GuardPenalty) {
+				_xVel = _xVel * ((100 - GuardPenaltyPercentage) / 100f);
+				_yVel = _yVel * ((100 - GuardPenaltyPercentage) / 100f);
+			}
 			_nexAnimWeapon = "HallebardeGuard";
 		} else {
 			if (_attacking) {
@@ -137,10 +141,19 @@ public class Player : MonoBehaviour {
 
 		_rb.velocity = new Vector2(_xVel, _yVel);
 
+		//Controlling colliders
+		Guard.GetComponent<Collider2D>().enabled = _guarding;
+		Weapon.GetComponent<Collider2D> ().enabled = _attacking;
+
 		if(!DebugPlayer) UpdatePlayerVisibility();
 		HandleWeaponAnimation();
+
 	}
-		
+
+	public void CancelAttack(){
+		_attacking = false;
+		_timerAttack = AttackTime;
+	}
 	void HandleWeaponAnimation(){
 		if(_curAnimWeapon != _nexAnimWeapon){
 			_curAnimWeapon = _nexAnimWeapon;
