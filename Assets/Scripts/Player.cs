@@ -4,16 +4,19 @@ using System.Collections;
 
 public class Player : MonoBehaviour {
 
-	public string PlayerIdentifier = "Player1";
+	[Header("DEBUG")]
+	public bool DebugPlayer = false;
 
+	[Header("Linking")]
 	public GameObject PlayerSprite;
 	public GameObject PlayerLight;
 	public GameObject PlayerWeaponLight;
 	public GameObject OrientationRoot;
-	public float StartingAngle = 90;
-
 	public GameObject Weapon;
 
+	[Header("Main Config")]
+	public string PlayerIdentifier = "Player1";
+	public float StartingAngle = 90;
 	public float InputOrientationDetect = 0.2f;
 
 	[Header("Attack (SECONDS)")]
@@ -47,6 +50,9 @@ public class Player : MonoBehaviour {
 	private bool _attacking;
 	private float _timerAttack;
 
+	//Guard
+	private bool _guarding;
+
 	private Animator _weaponAnim;
 	private SpriteRenderer _weaponSprite;
 
@@ -70,6 +76,8 @@ public class Player : MonoBehaviour {
 		_attacking = false;
 		_timerAttack = AttackTime + AttackCoolDown;
 
+		_guarding = false;
+
 		_weaponSprite = Weapon.GetComponent<SpriteRenderer>();
 		_weaponAnim = Weapon.GetComponent<Animator>();
 
@@ -88,37 +96,49 @@ public class Player : MonoBehaviour {
 
 		_angle = Mathf.Atan2 (_yView, _xView) * Mathf.Rad2Deg;
 
-		if (_xView > InputOrientationDetect || _yView > InputOrientationDetect || _xView < -InputOrientationDetect || _yView < -InputOrientationDetect) {
+		if (!_attacking && (_xView > InputOrientationDetect || _yView > InputOrientationDetect || _xView < -InputOrientationDetect || _yView < -InputOrientationDetect)) {
 			OrientationRoot.transform.localEulerAngles = new Vector3 (0, 0, _angle);
 		}
 
 		_timerAttack += Time.deltaTime;
 
 		lightOn = false;
+		_guarding = false;
 
 
-		if(Input.GetButtonDown(PlayerIdentifier + "Attack") && !_attacking && _timerAttack > (AttackTime + AttackCoolDown)){
-			_attacking = true;
-			_timerAttack = 0;
-			_nexAnimWeapon = "HallebardeAttack";
+		if(!_guarding && !_attacking && _timerAttack > (AttackTime + AttackCoolDown)){
+			if (Input.GetButtonDown (PlayerIdentifier + "Attack")) {
+				_attacking = true;
+				_timerAttack = 0;
+				_nexAnimWeapon = "HallebardeAttack";
+			}
+			if (Input.GetButton (PlayerIdentifier + "Guard")) {
+				_guarding = true;
+			}
 		}
 
-		if(_attacking){
-			if(_timerAttack <= AttackTime){
-				lightOn = true;
+		if (_guarding == true) {
+			lightOn = true;
+			_xVel = _yVel = 0;
+			_nexAnimWeapon = "HallebardeGuard";
+		} else {
+			if (_attacking) {
+				if (_timerAttack <= AttackTime) {
+					lightOn = true;
+				} else {
+					_attacking = false;
+				}
+				//CANCEL MOVEMENT
+				_xVel = _yVel = 0;
 			} else {
-				_attacking = false;
 				_nexAnimWeapon = "Idle";
 			}
-			//CANCEL MOVEMENT
-			_xVel = _yVel = 0;
 		}
 
 		_rb.velocity = new Vector2(_xVel, _yVel);
 
-		UpdatePlayerVisibility();
+		if(!DebugPlayer) UpdatePlayerVisibility();
 		HandleWeaponAnimation();
-		LolDebug();
 	}
 		
 	void HandleWeaponAnimation(){
@@ -140,15 +160,5 @@ public class Player : MonoBehaviour {
 			PlayerWeaponLight.SetActive(false);
 			_weaponSprite.enabled = false;
 		}
-	}
-
-	void LolDebug(){
-		float angle = Mathf.Atan2 (_yView, _xView) * Mathf.Rad2Deg; 
-		GameObject.Find("Text").GetComponent<Text>().text = 
-			"Timer attack : " + _timerAttack 
-			+ "\nAttack Time : " + AttackTime
-			+ "\nAttack cooldown : " + AttackCoolDown
-			+ "\nOrientation : " + Input.GetAxis(PlayerIdentifier + "HorizontalView") + " | " + Input.GetAxis(PlayerIdentifier + "VerticalView")
-			+ "\nAngle : " + angle;
-	}
+	}		
 }
