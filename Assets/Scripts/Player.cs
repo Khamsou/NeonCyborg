@@ -163,12 +163,12 @@ public class Player : MonoBehaviour {
 
 	void UpdatePlayerVisibility(){
 		if(lightOn){
-			PlayerSprite.SetActive(true);
+			//PlayerSprite.SetActive(true);
 			PlayerLight.SetActive(true);
 			PlayerWeaponLight.SetActive(true);
 			_weaponSprite.enabled = true;
 		} else {
-			PlayerSprite.SetActive(false);
+			//PlayerSprite.SetActive(false);
 			PlayerLight.SetActive(false);
 			PlayerWeaponLight.SetActive(false);
 			_weaponSprite.enabled = false;
