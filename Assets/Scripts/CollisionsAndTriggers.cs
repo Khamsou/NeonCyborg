@@ -8,7 +8,8 @@ public class CollisionsAndTriggers : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D other){
 		if (other.collider.gameObject.layer == LayerMask.NameToLayer ("Player")) {
-			Destroy (other.collider.gameObject);
+			Owner.CancelAttack ();
+			Camera.main.gameObject.GetComponent<CameraManager> ().Shake (0.5f);
 		}
 		if (other.collider.gameObject.layer == LayerMask.NameToLayer ("Shield")) {
 			Owner.CancelAttack ();
