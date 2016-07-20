@@ -7,8 +7,17 @@ public class GameControl : MonoBehaviour {
 	public bool SinglePlayer;
 	public bool Training;
 
-	private float _player1Score = 0;
-	private float _player2Score = 0;
+	public int Player1StartLives = 3;
+	public int Player2StartLives = 3;
+
+	public Text Player1Lives;
+	public Text Player2Lives;
+
+	public RectTransform Player1Stamina;
+	public RectTransform Player2Stamina;
+
+	private float _player1Lives;
+	private float _player2Lives;
 
 	// Use this for initialization
 	void Start () {
@@ -16,11 +25,18 @@ public class GameControl : MonoBehaviour {
 		if (Training) {
 			Instantiate (Resources.Load ("Trainer"));
 		}
+		_player1Lives = Player1StartLives;
+		_player2Lives = Player2StartLives;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		GameObject.Find("Score").GetComponent<Text>().text = "Player 1 : " + _player1Score + " | Player 2 : " + _player2Score;
+		Player1Lives.text = "Player 1 Lives : " + _player1Lives;
+		Player2Lives.text = "Player 2 Lives : " + _player2Lives;
+
+
+		Player1Stamina.localScale = new Vector2(GameObject.Find("Player1").GetComponent<Player>().GetStamina() / 100.0f, Player1Stamina.localScale.y);
+		Player2Stamina.localScale = new Vector2(GameObject.Find("Player2").GetComponent<Player>().GetStamina() / 100.0f, Player2Stamina.localScale.y);
 	}
 
 	void SpawnPlayers(bool first, bool onlyOne){
@@ -54,9 +70,9 @@ public class GameControl : MonoBehaviour {
 
 	public void AddPoints(string winner){
 		if(winner == "Player1"){
-			_player1Score ++;
+			_player2Lives --;
 		} else {
-			_player2Score ++;
+			_player1Lives --;
 		}
 	}
 	public void RespawnPlayer(GameObject victim){
