@@ -4,10 +4,14 @@ using System.Collections;
 public class GameControl : MonoBehaviour {
 
 	public bool SinglePlayer;
+	public bool Training;
 
 	// Use this for initialization
 	void Start () {
 		SpawnPlayers (true, SinglePlayer);
+		if (Training) {
+			Instantiate (Resources.Load ("Trainer"));
+		}
 	}
 	
 	// Update is called once per frame
@@ -42,5 +46,11 @@ public class GameControl : MonoBehaviour {
 		}
 		GameObject.Find ("Player1").transform.position = firstSpawn.transform.position;
 		if(!onlyOne) GameObject.Find ("Player2").transform.position = secondSpawn.transform.position;
+	}
+
+	public void RespawnPlayer(GameObject victim){
+		GameObject[] spawns = GameObject.FindGameObjectsWithTag ("SpawnPoint");
+
+		victim.transform.position = spawns [Random.Range (0, spawns.Length)].transform.position;
 	}
 }

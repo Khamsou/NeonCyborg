@@ -10,6 +10,9 @@ public class CollisionsAndTriggers : MonoBehaviour {
 		if (other.collider.gameObject.layer == LayerMask.NameToLayer ("Player")) {
 			Owner.CancelAttack ();
 			Camera.main.gameObject.GetComponent<CameraManager> ().Shake (0.5f);
+			if (other.collider.tag == "Player") {
+				GameObject.Find ("GameControl").GetComponent<GameControl> ().RespawnPlayer (other.gameObject);
+			}
 		}
 		if (other.collider.gameObject.layer == LayerMask.NameToLayer ("Shield")) {
 			Owner.CancelAttack ();

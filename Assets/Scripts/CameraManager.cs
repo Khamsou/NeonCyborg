@@ -12,7 +12,7 @@ public class CameraManager : MonoBehaviour {
 	void Start () {
 		_startPosition = transform.position;
 
-		_range = 2;
+		_range = 1;
 		_shakeTime = 0;
 		_shakeTimer = 0;
 	}

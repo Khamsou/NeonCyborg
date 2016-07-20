@@ -114,7 +114,8 @@ public class Player : MonoBehaviour {
 				_nexAnimWeapon = "HallebardeAttack";
 			}
 		}
-		if (!_attacking && Input.GetButton (PlayerIdentifier + "Guard")) {
+
+		if (!_attacking && (Input.GetAxis (PlayerIdentifier + "Guard") > 0.2f || Input.GetAxis (PlayerIdentifier + "Guard") < -0.2f)) {
 			_guarding = true;
 		}
 
@@ -163,12 +164,10 @@ public class Player : MonoBehaviour {
 
 	void UpdatePlayerVisibility(){
 		if(lightOn){
-			//PlayerSprite.SetActive(true);
 			PlayerLight.SetActive(true);
 			PlayerWeaponLight.SetActive(true);
 			_weaponSprite.enabled = true;
 		} else {
-			//PlayerSprite.SetActive(false);
 			PlayerLight.SetActive(false);
 			PlayerWeaponLight.SetActive(false);
 			_weaponSprite.enabled = false;
