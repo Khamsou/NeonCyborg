@@ -12,6 +12,7 @@ public class CollisionsAndTriggers : MonoBehaviour {
 			Camera.main.gameObject.GetComponent<CameraManager> ().Shake (0.5f);
 			if (other.collider.tag == "Player") {
 				GameObject.Find ("GameControl").GetComponent<GameControl> ().RespawnPlayer (other.gameObject);
+				GameObject.Find ("GameControl").GetComponent<GameControl> ().AddPoints (other.gameObject.name);
 			}
 		}
 		if (other.collider.gameObject.layer == LayerMask.NameToLayer ("Shield")) {
