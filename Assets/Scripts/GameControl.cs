@@ -13,9 +13,6 @@ public class GameControl : MonoBehaviour {
 	public Text Player1Lives;
 	public Text Player2Lives;
 
-	public RectTransform Player1Stamina;
-	public RectTransform Player2Stamina;
-
 	private float _player1Lives;
 	private float _player2Lives;
 
@@ -33,10 +30,6 @@ public class GameControl : MonoBehaviour {
 	void Update () {
 		Player1Lives.text = "Player 1 Lives : " + _player1Lives;
 		Player2Lives.text = "Player 2 Lives : " + _player2Lives;
-
-
-		Player1Stamina.localScale = new Vector2(GameObject.Find("Player1").GetComponent<Player>().GetStamina() / 100.0f, Player1Stamina.localScale.y);
-		Player2Stamina.localScale = new Vector2(GameObject.Find("Player2").GetComponent<Player>().GetStamina() / 100.0f, Player2Stamina.localScale.y);
 	}
 
 	void SpawnPlayers(bool first, bool onlyOne){

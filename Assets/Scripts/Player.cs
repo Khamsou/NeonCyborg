@@ -65,6 +65,7 @@ public class Player : MonoBehaviour {
 	//Attacking
 	private bool _attacking;
 	private float _timerAttack;
+	private bool _left;
 
 	//Guard
 	private bool _guarding;
@@ -105,11 +106,14 @@ public class Player : MonoBehaviour {
 
 		_staminaGuard = 100;
 		_staminaRegen = StaminaRegen;
+
+		_left = true;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-
+		PlayerLight.GetComponent<Light> ().intensity = (150 - _staminaGuard) / 20;
+		PlayerLight.GetComponent<Light> ().range = (250 - _staminaGuard) / 20;
 		_controlTimer += Time.deltaTime;
 
 		_xVel = Input.GetAxis(PlayerIdentifier + "Horizontal") * Time.deltaTime * PlayerSpeed;
@@ -140,7 +144,12 @@ public class Player : MonoBehaviour {
 			if (Input.GetButtonDown (PlayerIdentifier + "Attack")) {
 				_attacking = true;
 				_timerAttack = 0;
-				_nexAnimWeapon = "HallebardeAttack";
+				if (_left) {
+					_nexAnimWeapon = "SwordAttack";
+				} else {
+					_nexAnimWeapon = "SwordAttack2";
+				}
+				_left = !_left;
 			}
 		}
 
@@ -162,7 +171,7 @@ public class Player : MonoBehaviour {
 				_xVel = _xVel * ((100 - GuardPenaltyPercentage) / 100f);
 				_yVel = _yVel * ((100 - GuardPenaltyPercentage) / 100f);
 			}
-			_nexAnimWeapon = "HallebardeGuard";
+			_nexAnimWeapon = "SwordGuard";
 		} else {
 			if (_staminaGuard < 100) {
 				_staminaGuard += _staminaRegen * Time.deltaTime;
@@ -226,7 +235,7 @@ public class Player : MonoBehaviour {
 	}
 
 	void UpdatePlayerVisibility(){
-		if(_lightOn){
+		if(_lightOn || _controlTimer < _controlCooldown){
 			PlayerLight.SetActive(true);
 			_weaponSprite.enabled = true;
 		} else {

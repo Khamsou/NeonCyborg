@@ -8,13 +8,14 @@ public class CollisionsAndTriggers : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D other){
 		if (other.collider.gameObject.layer == LayerMask.NameToLayer ("Player")) {
-			Owner.CancelAttack ();
+			
 			Camera.main.gameObject.GetComponent<CameraManager> ().Shake (0.5f);
 
 			if (other.collider.tag == "Player") {
-				GameObject.Find ("GameControl").GetComponent<GameControl> ().RespawnPlayer (other.gameObject);
-				GameObject.Find ("GameControl").GetComponent<GameControl> ().AddPoints (other.gameObject.name);
 				Instantiate (Resources.Load ("DeathSound"));
+				Instantiate (Resources.Load ("PlayerDeathEffect"), other.transform.position, Quaternion.identity);
+				GameObject.Find ("GameControl").GetComponent<GameControl> ().RespawnPlayer (other.gameObject);
+				GameObject.Find ("GameControl").GetComponent<GameControl> ().AddPoints (Owner.name);
 			}
 		}
 		if (other.collider.gameObject.layer == LayerMask.NameToLayer ("Shield")) {
@@ -24,8 +25,12 @@ public class CollisionsAndTriggers : MonoBehaviour {
 		}
 		if (other.collider.gameObject.layer == LayerMask.NameToLayer ("Weapon")) {
 			Owner.CancelAttack ();
+			Owner.Repulse (other.contacts [0].point, 10.0f);
+			Owner.Stun (0.5f);
 			if (other.gameObject.GetComponent<Player> () != null) {
 				other.gameObject.GetComponent<Player> ().CancelAttack ();
+				other.gameObject.GetComponent<Player> ().Repulse (other.contacts [0].point, 10.0f);
+				other.gameObject.GetComponent<Player> ().Stun (0.5f);
 			}
 		}
 	}
