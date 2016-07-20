@@ -22,6 +22,7 @@ public class CollisionsAndTriggers : MonoBehaviour {
 			Owner.CancelAttack ();
 			Owner.Repulse (other.contacts [0].point, 10.0f);
 			Owner.Stun (0.5f);
+			Instantiate(Resources.Load("ParrySound"));
 		}
 		if (other.collider.gameObject.layer == LayerMask.NameToLayer ("Weapon")) {
 			Owner.CancelAttack ();
