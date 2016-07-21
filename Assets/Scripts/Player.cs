@@ -9,6 +9,7 @@ public class Player : MonoBehaviour {
 
 	[Header("Linking")]
 	public GameObject PlayerSprite;
+	public GameObject PlayerLightParent;
 	public GameObject PlayerLight;
 	public GameObject OrientationRoot;
 	public GameObject Weapon;
@@ -112,19 +113,24 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		PlayerLight.GetComponent<Light> ().intensity = (150 - _staminaGuard) / 20;
-		PlayerLight.GetComponent<Light> ().range = (250 - _staminaGuard) / 20;
-		_controlTimer += Time.deltaTime;
-
+		//Inputs
+		//Left stick
 		_xVel = Input.GetAxis(PlayerIdentifier + "Horizontal") * Time.deltaTime * PlayerSpeed;
 		_yVel = Input.GetAxis(PlayerIdentifier + "Vertical") * Time.deltaTime * PlayerSpeed;
 
+		//Right stick
 		_xView = Input.GetAxis (PlayerIdentifier + "HorizontalView");
 		_yView = Input.GetAxis (PlayerIdentifier + "VerticalView");
 
+		//Angle calculation
 		_lAngle = Mathf.Atan2 (_yVel, _xVel) * Mathf.Rad2Deg;
 		_rAngle = Mathf.Atan2 (_yView, _xView) * Mathf.Rad2Deg;
 
+		//Lights
+		PlayerLight.GetComponent<Light> ().intensity = (150 - _staminaGuard) / 20;
+		PlayerLight.GetComponent<Light> ().range = (250 - _staminaGuard) / 20;
+
+		//Apply rotation if NOT ATTACKING
 		if (!_attacking){
 			if (_xVel > InputOrientationDetect || _yVel > InputOrientationDetect || _xVel < -InputOrientationDetect || _yVel < -InputOrientationDetect) {
 				OrientationRoot.transform.localEulerAngles = new Vector3 (0, 0, _lAngle);
@@ -134,12 +140,15 @@ public class Player : MonoBehaviour {
 			}
 		}
 
+		//Timers
 		_timerAttack += Time.deltaTime;
+		_controlTimer += Time.deltaTime;
 
+		//Visual
 		_lightOn = false;
+
 		_guarding = false;
-
-
+		//ATTACKING
 		if (_controlTimer > _controlCooldown && !_guarding && !_attacking && _timerAttack > (AttackTime + AttackCoolDown)) {
 			if (Input.GetButtonDown (PlayerIdentifier + "Attack")) {
 				_attacking = true;
@@ -154,18 +163,28 @@ public class Player : MonoBehaviour {
 			}
 		}
 
+		//Guard
 		if (_controlTimer > _controlCooldown && !_attacking && Input.GetButton (PlayerIdentifier + "Guard")) {
 			_guarding = true;
 		}
 
+		//Guarding
 		if (_guarding == true) {
 			if (_staminaGuard >= 0) {
 				_staminaGuard -= StaminaUse * Time.deltaTime;
+
+				if (_staminaGuard < 20) {
+					PlayerLight.transform.position = new Vector3 (PlayerLightParent.transform.position.x + Random.Range (-0.5f, 0.5f), PlayerLightParent.transform.position.y + Random.Range (-0.5f, 0.5f), PlayerLightParent.transform.position.z);
+				} else {
+					PlayerLight.transform.position = PlayerLightParent.transform.position;
+				}
 			} else {
 				_guarding = false;
 				Instantiate (Resources.Load ("Sounds/StunSound"));
+				Instantiate (Resources.Load ("Effects/StunEffect"), PlayerLight.transform.position, Quaternion.identity);
 				_xVel = _yVel = 0;
-				Stun (1.5f);
+				_rb.velocity = new Vector2(_xVel, _yVel);
+				Stun (0.8f);
 			}
 			_lightOn = true;
 			if (GuardPenalty) {
@@ -218,10 +237,15 @@ public class Player : MonoBehaviour {
 		_controlCooldown = duration;
 	}
 
+	public void ConsumeStamina(float amount){
+		_staminaGuard -= amount;
+	}
+
 	public void Reset(){
 		_controlCooldown = 0.2f;
 		_controlTimer = _controlCooldown;
 		_staminaGuard = 100f;
+		_lightOn = false;
 	}
 
 	public float GetStamina(){
