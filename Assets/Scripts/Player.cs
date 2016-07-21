@@ -149,6 +149,7 @@ public class Player : MonoBehaviour {
 				} else {
 					_nexAnimWeapon = "SwordAttack2";
 				}
+				Instantiate(Resources.Load("Sounds/SwordSwoosh" + Random.Range(1, 5) + "Sound"));
 				_left = !_left;
 			}
 		}
@@ -162,7 +163,7 @@ public class Player : MonoBehaviour {
 				_staminaGuard -= StaminaUse * Time.deltaTime;
 			} else {
 				_guarding = false;
-				Instantiate (Resources.Load ("StunSound"));
+				Instantiate (Resources.Load ("Sounds/StunSound"));
 				_xVel = _yVel = 0;
 				Stun (1.5f);
 			}
