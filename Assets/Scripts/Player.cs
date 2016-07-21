@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using XInputDotNetPure;
 
 public class Player : MonoBehaviour {
 
@@ -77,6 +78,9 @@ public class Player : MonoBehaviour {
 	private string _curAnimWeapon;
 	private string _nexAnimWeapon;
 
+	//VIBRATOR LOL
+	private float _timerVibrate;
+
 	void Start () {
 		_rb = GetComponent<Rigidbody2D>();
 
@@ -109,6 +113,7 @@ public class Player : MonoBehaviour {
 		_staminaRegen = StaminaRegen;
 
 		_left = true;
+		_timerVibrate = 1.0f;
 	}
 	
 	// Update is called once per frame
@@ -218,8 +223,10 @@ public class Player : MonoBehaviour {
 		Weapon.GetComponent<Collider2D> ().enabled = _attacking;
 
 		if(!DebugPlayer) UpdatePlayerVisibility();
-		HandleWeaponAnimation();
 
+
+		HandleWeaponAnimation();
+		HandleGamepadVibrate ();
 	}
 
 	public void CancelAttack(){
@@ -241,6 +248,8 @@ public class Player : MonoBehaviour {
 		_staminaGuard -= amount;
 	}
 
+
+
 	public void Reset(){
 		_controlCooldown = 0.2f;
 		_controlTimer = _controlCooldown;
@@ -252,10 +261,33 @@ public class Player : MonoBehaviour {
 		return _staminaGuard;
 	}
 
+	public void Vibrate (float timer){
+		_timerVibrate = timer;
+	}
+
 	void HandleWeaponAnimation(){
 		if(_curAnimWeapon != _nexAnimWeapon){
 			_curAnimWeapon = _nexAnimWeapon;
 			_weaponAnim.Play(_nexAnimWeapon);
+		}
+	}
+
+	void HandleGamepadVibrate(){
+		_timerVibrate += Time.deltaTime;
+		if (_timerVibrate < 1.0f) {
+			if (PlayerIdentifier == "Player1") {
+				GamePad.SetVibration (PlayerIndex.One, 1.0f, 1.0f);
+			}
+			if (PlayerIdentifier == "Player2") {
+				GamePad.SetVibration (PlayerIndex.Two, 1.0f, 1.0f);
+			}
+		} else {
+			if (PlayerIdentifier == "Player1") {
+				GamePad.SetVibration (PlayerIndex.One, 0f, 0f);
+			}
+			if (PlayerIdentifier == "Player2") {
+				GamePad.SetVibration (PlayerIndex.Two, 0f, 0f);
+			}
 		}
 	}
 
