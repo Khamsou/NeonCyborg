@@ -178,10 +178,22 @@ public class Player : MonoBehaviour {
 			if (_staminaGuard >= 0) {
 				_staminaGuard -= StaminaUse * Time.deltaTime;
 
-				if (_staminaGuard < 20) {
+				if (_staminaGuard < 30) {
 					PlayerLight.transform.position = new Vector3 (PlayerLightParent.transform.position.x + Random.Range (-0.5f, 0.5f), PlayerLightParent.transform.position.y + Random.Range (-0.5f, 0.5f), PlayerLightParent.transform.position.z);
+					if (PlayerIdentifier == "Player1") {
+						GamePad.SetVibration (PlayerIndex.One, 1.0f, 1.0f);
+					}
+					if (PlayerIdentifier == "Player2") {
+						GamePad.SetVibration (PlayerIndex.Two, 1.0f, 1.0f);
+					}
 				} else {
 					PlayerLight.transform.position = PlayerLightParent.transform.position;
+					if (PlayerIdentifier == "Player1") {
+						GamePad.SetVibration (PlayerIndex.One, 0.0f, 0.0f);
+					}
+					if (PlayerIdentifier == "Player2") {
+						GamePad.SetVibration (PlayerIndex.Two, 0.0f, 0.0f);
+					}
 				}
 			} else {
 				_guarding = false;
@@ -242,14 +254,13 @@ public class Player : MonoBehaviour {
 	public void Stun(float duration){
 		_controlTimer = 0;
 		_controlCooldown = duration;
+		Vibrate (0.6f);
 	}
 
 	public void ConsumeStamina(float amount){
 		_staminaGuard -= amount;
 	}
-
-
-
+		
 	public void Reset(){
 		_controlCooldown = 0.2f;
 		_controlTimer = _controlCooldown;
