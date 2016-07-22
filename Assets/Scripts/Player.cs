@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using XInputDotNetPure;
+using XInputDotNetPure; //Required for rumble/vibrations
 
 public class Player : MonoBehaviour {
+
+
+	#region Public
 
 	[Header("DEBUG")]
 	public bool DebugPlayer = false;
@@ -21,6 +24,7 @@ public class Player : MonoBehaviour {
 	public float StartingAngle = 90;
 	public float InputOrientationDetect = 0.2f;
 
+
 	[Header("Attack (SECONDS)")]
 	public float AttackTime;
 	public float AttackCoolDown;
@@ -36,6 +40,9 @@ public class Player : MonoBehaviour {
 	public float StaminaRegen;
 	public float StaminaUse;
 
+	#endregion
+
+	#region Private
 	//Velocity
 	private float _xVel;
 	private float _yVel;
@@ -80,6 +87,7 @@ public class Player : MonoBehaviour {
 
 	//VIBRATOR LOL
 	private float _timerVibrate;
+	#endregion
 
 	void Start () {
 		_rb = GetComponent<Rigidbody2D>();
@@ -115,10 +123,12 @@ public class Player : MonoBehaviour {
 		_left = true;
 		_timerVibrate = 1.0f;
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
-		//Inputs
+		// ----------------------- /
+		// INPUTS
+		// ----------------------- /
+
 		//Left stick
 		_xVel = Input.GetAxis(PlayerIdentifier + "Horizontal") * Time.deltaTime * PlayerSpeed;
 		_yVel = Input.GetAxis(PlayerIdentifier + "Vertical") * Time.deltaTime * PlayerSpeed;
@@ -131,7 +141,9 @@ public class Player : MonoBehaviour {
 		_lAngle = Mathf.Atan2 (_yVel, _xVel) * Mathf.Rad2Deg;
 		_rAngle = Mathf.Atan2 (_yView, _xView) * Mathf.Rad2Deg;
 
-		//Lights
+		// ----------------------- /
+		// Lights
+		// ----------------------- /
 		PlayerLight.GetComponent<Light> ().intensity = (150 - _staminaGuard) / 20;
 		PlayerLight.GetComponent<Light> ().range = (250 - _staminaGuard) / 20;
 
@@ -140,6 +152,7 @@ public class Player : MonoBehaviour {
 			if (_xVel > InputOrientationDetect || _yVel > InputOrientationDetect || _xVel < -InputOrientationDetect || _yVel < -InputOrientationDetect) {
 				OrientationRoot.transform.localEulerAngles = new Vector3 (0, 0, _lAngle);
 			}
+			//Right stick override
 			if (_xView > InputOrientationDetect || _yView > InputOrientationDetect || _xView < -InputOrientationDetect || _yView < -InputOrientationDetect) {
 				OrientationRoot.transform.localEulerAngles = new Vector3 (0, 0, _rAngle);
 			}
@@ -151,6 +164,7 @@ public class Player : MonoBehaviour {
 
 		//Visual
 		_lightOn = false;
+
 
 		_guarding = false;
 		//ATTACKING

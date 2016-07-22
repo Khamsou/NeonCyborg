@@ -6,6 +6,10 @@ public class CollisionsAndTriggers : MonoBehaviour {
 
 	public Player Owner;
 
+	/*
+	 * This script is executed when a weapon collides with something
+	 * */
+
 	//When the weapon collides with
 	void OnCollisionEnter2D(Collision2D other){
 		//ANOTHER Weapon
@@ -52,7 +56,9 @@ public class CollisionsAndTriggers : MonoBehaviour {
 				Instantiate (Resources.Load ("Sounds/DieSound"));
 				GameObject head = (GameObject)Instantiate (Resources.Load ("Effects/Head"), other.transform.position, Quaternion.identity);
 				head.GetComponent<Rigidbody2D>().AddForce((head.transform.position - Owner.transform.position) * 500);
-				Instantiate (Resources.Load ("Effects/PlayerDeathEffect"), other.transform.position, Quaternion.identity);
+				//Instantiate (Resources.Load ("Effects/PlayerDeathEffect"), other.transform.position, Quaternion.identity);
+				GameObject splat = (GameObject)Instantiate (Resources.Load ("Effects/BloodSplat" + Random.Range(1, 3)), other.transform.position, Quaternion.identity);
+				splat.transform.Translate (0, 0, 1);
 				GameObject.Find ("GameControl").GetComponent<GameControl> ().RespawnPlayer (other.gameObject);
 				GameObject.Find ("GameControl").GetComponent<GameControl> ().AddPoints (Owner.name);
 

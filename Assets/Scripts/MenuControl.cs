@@ -54,7 +54,7 @@ public class MenuControl : MonoBehaviour {
 					_timer1Vibrate = 0.8f;
 					Player1Lobby.text = "Joueur 1 - Prêt !";
 				}
-				if (!_player2Ready && Input.GetKeyDown (KeyCode.Joystick2Button0)) {
+				if (!_player2Ready && (Input.GetKeyDown (KeyCode.Joystick2Button0) || Input.GetKeyDown (KeyCode.Return))) {
 					_player2Ready = true;
 					_timer2Vibrate = 0.8f;
 					Player2Lobby.text = "Joueur 2 - Prêt !";
@@ -92,7 +92,7 @@ public class MenuControl : MonoBehaviour {
 					_timer1Vibrate = _timer2Vibrate = 50.0f;
 				}
 				if (_timerGo > 5.0f) {
-					SceneManager.LoadScene ("Work");
+					SceneManager.LoadScene ("Level2");
 				}
 			}
 		}
